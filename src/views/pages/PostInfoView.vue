@@ -38,9 +38,17 @@
                                 <small class="ms-1 text-muted">{{ post.post_like_count }}</small>
                             </div>
                         </div>
-                        {{ post.name }}
-                        <span v-if="post.status == '1'" class="badge bg-success ms-2">Available</span>
-                        <span v-else class="badge bg-danger ms-2">Soldout</span>
+                        <div>
+                            <div>
+                                {{ post.name }}
+                                <span v-if="post.status == '1'" class="badge bg-success ms-2">Available</span>
+                                <span v-else class="badge bg-danger ms-2">Soldout</span>
+                            </div>
+                            <div>
+                                <small class="text-muted"><i class="fa-solid fa-clock"></i> <Timeago :datetime="new Date(post.created_at)"></Timeago></small>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="card-body position-relative">
                         <div>
@@ -51,19 +59,37 @@
                                         <td><span class="ms-2">PID-{{ post.id }}</span></td>
                                     </tr>
                                     <tr>
-                                        <td><i class="fa-solid fa-clock"></i></td>
-                                        <td>
-                                            <span class="ms-2">
-                                                <Timeago :datetime="new Date(post.created_at)"></Timeago>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td><i class="fa-solid fa-dollar-sign"></i></td>
                                         <td><span class="ms-2">{{ post.price }} {{ post.mmk }}</span></td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <div class="my-3" v-if="post.additional">
+                                <h6 for="">Other Information</h6>
+                                <tbody>
+                                    <tr v-if="post.additional.brand">
+                                        <td>Brand</td>
+                                        <td><span class="ms-2">{{ post.additional.brand }}</span></td>
+                                    </tr>
+                                    <tr v-if="post.additional.model">
+                                        <td>Model</td>
+                                        <td>
+                                            <span class="ms-2">
+                                                {{ post.additional.model }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="post.additional.type">
+                                        <td>Type</td>
+                                        <td><span class="ms-2 badge bg-primary">{{ post.additional.type }}</span></td>
+                                    </tr>
+                                    <tr v-if="post.additional.fashionType">
+                                        <td>Type</td>
+                                        <td><span class="ms-2 badge bg-primary">{{ post.additional.fashionType }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </div>
                             <label class="fw-bold mt-3"> Description</label>
                             <p class="text-muted">
                                 <small v-html="post.description"></small>
@@ -122,10 +148,11 @@
                 <div class="card mb-1" v-for="(comment, index) in comments" :key="index" style="background:#303030">
                     <div class="card-header position-relative">
                         <div class="d-flex align-items-center">
-                            <img v-if="comment.profile_photo_path" @click="goToProfile(comment.user_id)" :src="imagePath + comment.profile_photo_path"
-                                alt="" class="rounded img-fluid rounded-circle" style="height:35px;width:35px">
-                            <img v-else @click="goToProfile(comment.user_id)" :src="getProfilePhoto(comment.name)" alt=""
+                            <img v-if="comment.profile_photo_path" @click="goToProfile(comment.user_id)"
+                                :src="imagePath + comment.profile_photo_path" alt=""
                                 class="rounded img-fluid rounded-circle" style="height:35px;width:35px">
+                            <img v-else @click="goToProfile(comment.user_id)" :src="getProfilePhoto(comment.name)"
+                                alt="" class="rounded img-fluid rounded-circle" style="height:35px;width:35px">
                             <div class="ms-2">
                                 <span class="d-block" @click="goToProfile(comment.user_id)">{{ comment.name }}</span>
                                 <small class="d-block opacity-75">
@@ -227,6 +254,7 @@ export default {
             }
             axios.get(this.api + '/posts/info/' + this.$route.params.id, this.authHeader).then(r => {
                 this.post = r.data.post[0];
+                // this.post.additional = JSON.parse(r.data.post[0].additional);
                 this.sellUser = r.data.user;
                 this.$store.dispatch('pageLoadingState', false);
                 this.pageStart = false;

@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid" v-if="!pageLoading">
         <ActionBar :title="'Edit Post'"></ActionBar>
         <div class="row">
             <div class="col-md-1"></div>
@@ -76,6 +76,37 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="row my-2" v-if="formData.category_id">
+                                <hr>
+                                <h5>Additional Information</h5>
+                                <div class="form-group col-6 mt-2">
+                                    <label for="pBrand">Brand</label>
+                                    <input v-model="additional.brand" type="text" class="form-control"
+                                        placeholder="Brand Name (Toyota , Samsung , ...)">
+                                </div>
+                                <div class="form-group col-6 mt-2">
+                                    <label for="pModel">Model</label>
+                                    <input v-model="additional.model" type="text" class="form-control"
+                                        placeholder="Model Number">
+                                </div>
+                                <div class="form-group  col-6 mt-2">
+                                    <label for="pModel">Type</label>
+                                    <select v-model="additional.type" name="" id="" class="form-select">
+                                        <option value="ရောင်းမည်">အရောင်း</option>
+                                        <option value="ငှားမည်">အငှား</option>
+                                    </select>
+                                </div>
+                                <div class="form-group  col-6 mt-2" v-if="needFashionType">
+                                    <label for="pModel">Fashion Type</label>
+                                    <select v-model="additional.fashionType" name="" id="" class="form-select">
+                                        <option value="">Please Select</option>
+                                        <option v-for="(type, index) in fashionTypes" :key="index" :value="type">{{
+                                            type
+                                        }}</option>
+                                    </select>
+                                </div>
+                                <hr class="my-5">
+                            </div>
                             <div class="form-group mt-2 mb-3">
                                 <label for="pDesc">Description</label>
                                 <textarea v-model="formData.description"
@@ -110,12 +141,20 @@ export default {
     data() {
         return {
             previewImages: [],
+            fashionTypes: ['Clothes', 'Footwear', 'Sportswear', 'Traditional', 'Other'],
+            additional: {
+                model: '',
+                type: 'ရောင်းမည်',
+                fashionType: '',
+                brand: '',
+            },
             oldImages: [],
             formData: {
                 name: '',
                 category_id: '',
                 price: '',
                 images: [],
+                additional: '',
                 mmk: 'ကျပ်',
                 description: '',
                 adjust_price: true
@@ -145,14 +184,19 @@ export default {
                     description: data.description,
                     adjust_price: data.adjust_price == 1 ? true : false
                 }
+                this.additional = data.additional;
                 this.oldImages = data.images;
             }).catch(err => { useFunction.error(err, this.$swal) })
         },
-        updateData(){
+        updateData() {
+            this.formData.additional = JSON.stringify(this.additional);
             let data = this.formData;
+            if (this.chooseCategoryName != 'ဖက်ရှင်') {
+                this.additional.fashionType = ''
+            }
             data.oldImages = this.oldImages;
-            axios.post(this.api+'/post/update/'+this.$route.params.id,data,this.authHeader).then(r=>{
-                useFunction.alert(r.data,this.$swal);
+            axios.post(this.api + '/post/update/' + this.$route.params.id, data, this.authHeader).then(r => {
+                useFunction.alert(r.data, this.$swal);
                 if (r.data.success) {
                     this.$router.go(-1);
                 }
@@ -162,11 +206,11 @@ export default {
                         this.errorShow(error);
                     });
                 }
-            }).catch(err=>{useFunction.error(err,this.$swal)});
+            }).catch(err => { useFunction.error(err, this.$swal) });
         },
-        oldImageRemove(index){
+        oldImageRemove(index) {
             console.log(index);
-            this.oldImages.splice(index,1);
+            this.oldImages.splice(index, 1);
         },
         imageAdd() {
             $('.imageAddFiles').click();
@@ -215,8 +259,21 @@ export default {
         }
     },
     computed: {
-        ...mapState(['defaultVar']),
+        ...mapState(['defaultVar','pageLoading']),
         ...mapGetters(['api', 'authHeader', 'imagePath']),
+        chooseCategoryName() {
+            if (this.formData.category_id) {
+                let category_name = this.defaultVar.category.filter(e => { return e.id == this.formData.category_id });
+                return category_name[0].name;
+            }
+            return '';
+        },
+        needFashionType() {
+            if (this.chooseCategoryName == 'ဖက်ရှင်') {
+                return true;
+            }
+            return false;
+        }
     },
     mounted() {
         this.getPostData();

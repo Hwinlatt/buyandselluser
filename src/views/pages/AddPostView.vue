@@ -42,8 +42,8 @@
                                 <select v-model="formData.category_id" :class="{ 'is-invalid': formError.category_id }"
                                     class="form-select " id="pCategory">
                                     <option class="bg-dark text-light" value="">Select Category...</option>
-                                    <option class="bg-dark text-light" :value="category.id" v-for="(category, index) in defaultVar.category"
-                                        :key="index">
+                                    <option class="bg-dark text-light" :value="category.id"
+                                        v-for="(category, index) in defaultVar.category" :key="index">
                                         {{ category.name }}
                                     </option>
                                 </select>
@@ -51,7 +51,7 @@
                             </div>
                             <div class="form-group col-6 mt-2">
                                 <label for="pPrice">Price</label>
-                                <input v-model="formData.price" :class="{ 'is-invalid': formError.price }" type="number"
+                                <input placeholder="Enter Price" v-model="formData.price" :class="{ 'is-invalid': formError.price }" type="number"
                                     class="form-control" id="pPrice">
                                 <span class="invalid-feedback">{{ formError.price }}</span>
                             </div>
@@ -71,6 +71,36 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <!-- For Car Category  -->
+                            <div class="row my-2" v-if="formData.category_id">
+                                <hr>
+                                <h5>Additional Information</h5>
+                                <div class="form-group col-6 mt-2">
+                                    <label for="pBrand">Brand</label>
+                                    <input v-model="additional.brand" type="text" class="form-control" placeholder="Brand Name (Toyota , Samsung , ...)">
+                                </div>
+                                <div class="form-group col-6 mt-2">
+                                    <label for="pModel">Model</label>
+                                    <input v-model="additional.model" type="text" class="form-control" placeholder="Model Number">
+                                </div>
+                                <div class="form-group  col-6 mt-2">
+                                    <label for="pModel">Type</label>
+                                    <select v-model="additional.type" name="" id="" class="form-select">
+                                        <option value="ရောင်းမည်">အရောင်း</option>
+                                        <option value="ငှားမည်">အငှား</option>
+                                    </select>
+                                </div>
+                                <div class="form-group  col-6 mt-2" v-if="needFashionType">
+                                    <label for="pModel">Fashion Type</label>
+                                    <select v-model="additional.fashionType" name="" id="" class="form-select">
+                                        <option value="">Please Select</option>
+                                        <option v-for="(type,index) in fashionTypes" :key="index" :value="type">{{ type }}</option>
+                                    </select>
+                                </div>
+                                <hr class="my-5">
+                            </div>
+
                             <div class="form-group mt-2 mb-3">
                                 <label for="pDesc">Description</label>
                                 <textarea v-model="formData.description"
@@ -105,11 +135,19 @@ export default {
     data() {
         return {
             previewImages: [],
+            fashionTypes:['Clothes','Footwear','Sportswear','Traditional','Other'],
+            additional: {
+                model: '',
+                type: 'ရောင်းမည်',
+                fashionType : '',
+                brand: '',
+            },
             formData: {
                 name: '',
-                category_id: '',
+                category_id: '1',
                 price: '',
                 images: [],
+                additional:'',
                 mmk: 'ကျပ်',
                 description: '',
                 adjust_price: true
@@ -131,6 +169,10 @@ export default {
             $('.imageAddFiles').click();
         },
         AddProduct() {
+            this.formData.additional = JSON.stringify(this.additional);
+            if (this.chooseCategoryName != 'ဖက်ရှင်') {
+                this.additional.fashionType = ''
+            }
             axios.post(this.api + '/post/add', this.formData, this.authHeader).then(r => {
                 useFunction.alert(r.data, this.$swal);
                 if (r.data.success) {
@@ -142,8 +184,8 @@ export default {
                         this.errorShow(error);
                     });
                 }
-            }).catch(err=>{
-                useFunction.error(err,this.$swal);
+            }).catch(err => {
+                useFunction.error(err, this.$swal);
             })
         },
         onFileChange(e) {
@@ -190,8 +232,21 @@ export default {
         }
     },
     computed: {
-        ...mapState(['defaultVar','pageLoading']),
+        ...mapState(['defaultVar', 'pageLoading']),
         ...mapGetters(['api', 'authHeader']),
+        chooseCategoryName() {
+            if (this.formData.category_id) {
+                let category_name = this.defaultVar.category.filter(e => { return e.id == this.formData.category_id });
+                return category_name[0].name;
+            }
+            return '';
+        },
+        needFashionType(){
+            if (this.chooseCategoryName == 'ဖက်ရှင်') {
+                return true;
+            }
+            return false;
+        }
     },
 }
 </script>
@@ -214,5 +269,4 @@ export default {
     height: 70px;
     margin: 2px;
 }
-
 </style>

@@ -1,4 +1,4 @@
-const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 export default {
     alert(data, Swal) {
         if (data.error) {
@@ -23,21 +23,24 @@ export default {
             })
         }
     },
-    error(data, Swal) {
-        if (data.response.data.message == 'Your email address is not verified.') {
-            Swal.fire({
-                title: 'Error',
-                icon: 'error',
-                html: data.response.data.message + '<br><a href="verification">Email Verification</a>'
-            })
-        } else {
-            Swal.fire(data.response.status.toString(), data.response.statusText, 'error');
+    error(err, Swal) {
+        console.log(err);
+        if (err.response.err.message) {
+            if (err.response.err.message == 'Your email address is not verified.') {
+                Swal.fire({
+                    title: 'Error',
+                    icon: 'error',
+                    html: err.response.err.message + '<br><a href="verification">Email Verification</a>'
+                })
+            } else {
+                Swal.fire(err.response.status.toString(), err.response.statusText, 'error');
+            }
         }
     },
-    getAgoTime(time){
+    getAgoTime(time) {
         console.log(time);
     },
-    getDate(data){
+    getDate(data) {
         let date = new Date(data);
         let d = date.getDate();
         let M = month[date.getMonth()];
@@ -49,8 +52,8 @@ export default {
         }
         return `${d}/${M}/${Y} ${H}:${min}`;
     },
-    getProfileImage(name){
-        name = name.replace(' ','+');
+    getProfileImage(name) {
+        name = name.replace(' ', '+');
         return `https://ui-avatars.com/api/?name=${name}&color=7F9CF5&background=EBF4FF`;
     }
 }

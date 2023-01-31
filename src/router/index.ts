@@ -65,6 +65,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/profile/ProfileView.vue'),
   },
   {
+    path: '/profile/review/:id',
+    name: 'profileReview',
+    component: () => import('../views/profile/ReviewView.vue'),
+  },
+  {
     path: '/my_posts',
     name: 'my_posts',
     component: () => import('../views/MyPostView.vue'),

@@ -30,10 +30,22 @@
             </div>
             <div style="margin-top:165px" class="col-md-12">
                 <div class="ms-3">
-                    <span><i class="fa-regular fa-calendar fw-lighter me-1">
-                        </i> Joined - {{ getDate(info.user.created_at) }}</span><br>
-                    <span><i class="fa-solid fa-location-dot me-1"></i> {{ info.user.region }} / {{ info.user.city }}
-                    </span>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><i class="fa-regular fa-calendar fw-lighter me-1"></i></td>
+                                <td><span class="ms-2">Joined - {{ getDate(info.user.created_at) }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-location-dot me-1"></i></td>
+                                <td><span class="ms-2">{{ info.user.region }} / {{ info.user.city }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa-solid fa-star me-1"></i></td>
+                                <td><span @click="goToReviewPage()" class="ms-2 text-primary cursor-pointer"> {{ info.review.rating }}  . ({{ info.review.count }} Reviews)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <div class="line w-25"></div>
                     <span class="mt-2"> Bio</span><br>
                     <p style="word-wrap: break-word;" v-html="info.user.description"></p>
@@ -108,6 +120,10 @@ export default {
                 user: {},
                 total_post: 0,
                 categories: [],
+                review:{
+                    count:0,
+                    rating:0.0,
+                },
             },
             posts: [],
             reportUserForm: {
@@ -177,6 +193,9 @@ export default {
                     btn.click();
                 }
             })
+        },
+        goToReviewPage(){
+            this.$router.push({name:'profileReview',params:{id:this.$route.params.id}});
         }
     },
     computed: {

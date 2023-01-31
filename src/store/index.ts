@@ -7,7 +7,7 @@ export default createStore({
     favCount: 0,
     pageLoading: false,
     activePage: 'home',
-    server: 'http://buyandsell.hellolinker.net',
+    server: 'http://127.0.0.1:8000',
     token: localStorage.getItem('token'),
     user: {
       email_verified_at: null,

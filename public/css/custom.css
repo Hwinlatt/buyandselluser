@@ -145,6 +145,11 @@ select option {
     height: 40px;
 }
 
+.img-30 {
+    width: 30px;
+    height: 30px;
+}
+
 @media only screen and (max-width: 720px) {
     .product_card {
         width: 45%;

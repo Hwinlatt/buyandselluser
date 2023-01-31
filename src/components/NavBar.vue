@@ -39,6 +39,24 @@
             <!-- Right elements -->
             <div class="d-flex align-items-center">
                 <!-- Icon -->
+                <!-- <div class="dropdown me-2">
+                    <a class="dropdown-toggle d-flex align-items-center hidden-arrow" href="#"
+                        id="navbarDropdownMenuLanguage" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-globe me-1"></i> <span class=" text-uppercase">{{ lang }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLanguage">
+                        <li>
+                            <span class="dropdown-item cursor-pointer" @click="chgLanguage('en')">
+                                English
+                            </span>
+                        </li>
+                        <li>
+                            <span class="dropdown-item cursor-pointer" @click="chgLanguage('mm')">
+                                Myanmar
+                            </span>
+                        </li>
+                    </ul>
+                </div> -->
                 <router-link v-if="isLogin" title="favorite" class="text-reset me-3" :to="{ name: 'favoritePost' }">
                     <span><i class="fa-solid fa-heart"></i></span> {{ favCount }}
                 </router-link>
@@ -47,7 +65,9 @@
                     <a class="text-reset me-3 dropdown-toggle hidden-arrow" href="#" id="navbarDropdownNotification"
                         role="button" data-mdb-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
-                        <span v-if="notificationCount > 0" class="badge rounded-pill badge-notification bg-danger">{{ notificationCount }}</span>
+                        <span v-if="notificationCount > 0" class="badge rounded-pill badge-notification bg-danger">{{
+                            notificationCount
+                        }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownNotification">
                         <li>
@@ -55,6 +75,7 @@
                         </li>
                     </ul>
                 </div>
+
                 <!-- Avatar -->
                 <div>
                     <div v-if="!isLogin">
@@ -67,8 +88,8 @@
                     <a class="dropdown-toggle d-flex align-items-center hidden-arrow" href="#"
                         id="navbarDropdownMenuAvatar" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
                         <img v-if="user.profile_photo_path" :src="imagePath + user.profile_photo_path"
-                            class="rounded-circle" height="25" alt="Profile" />
-                        <img v-else :src="user.profile_photo_url" class="rounded-circle" height="25" alt="Profile" />
+                            class="rounded-circle img-30"  alt="Profile" />
+                        <img v-else :src="user.profile_photo_url" class="rounded-circle img-30"  alt="Profile" />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
                         <li>
@@ -99,8 +120,8 @@
                 :class="{ 'text-muted': activePage != 'home' }">
                 <i class="fa-solid fa-house"></i> Home
             </router-link>
-            <a v-if="isLogin" target="_black" @click="mobileMenuSH()" :href="server + '/chatify'" class="list-group-item px-3"
-                :class="{ 'text-muted': activePage != 'chat' }">
+            <a v-if="isLogin" target="_black" @click="mobileMenuSH()" :href="server + '/chatify'"
+                class="list-group-item px-3" :class="{ 'text-muted': activePage != 'chat' }">
                 <i class="fa-solid fa-message"></i> Message
             </a>
             <router-link v-if="isLogin" @click="mobileMenuSH()" :to="{ name: 'my_posts' }" class="list-group-item px-3"
@@ -122,10 +143,11 @@ export default {
     data() {
         return {
             mobileMenu: false,
+            lang: localStorage.getItem('language'),
         }
     },
     computed: {
-        ...mapState(['activePage', 'user', 'favCount', 'server','notificationCount']),
+        ...mapState(['activePage', 'user', 'favCount', 'server', 'notificationCount']),
         ...mapGetters(['isLogin', 'api', 'authHeader', 'imagePath']),
     },
     methods: {
@@ -145,8 +167,12 @@ export default {
             }
             this.mobileMenu = true;
         },
-        goToMainProfile(){
-            this.$router.push({name:'profile',params:{id:this.user.id}})
+        goToMainProfile() {
+            this.$router.push({ name: 'profile', params: { id: this.user.id } })
+        },
+        chgLanguage(lang) {
+            localStorage.setItem('language', lang);
+            window.location.reload();
         }
     },
     mounted() {
