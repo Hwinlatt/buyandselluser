@@ -19,6 +19,7 @@
                                 class="fa-solid fa-trash"></i></button>
                         <i v-if="!noti.status" class="fa-solid fa-circle me-2 text-danger"></i> <span
                             v-html="noti.description"></span>
+                        <small class="text-muted ms-3"><Timeago :datetime="new Date(noti.created_at)"></Timeago></small>
                     </li>
                 </ul>
                 <h5 v-else class="text-center text-muted mt-5">{{ get_noti_status }}</h5>
@@ -32,8 +33,9 @@ import ActionBar from '@/components/ActionBar.vue'
 import { mapGetters, mapState } from 'vuex'
 import useFunction from '@/src/js/custom'
 import axios from 'axios'
+import {Timeago} from 'vue2-timeago'
 export default {
-    components: { ActionBar },
+    components: { ActionBar,Timeago },
     name: 'NotificationView',
     data() {
         return {

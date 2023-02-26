@@ -1,9 +1,14 @@
 <template>
     <div class="container-fluid" v-if="!pageLoading">
-        <ActionBar :title="'Profile'"></ActionBar>
+        <ActionBar :title="'Profile'">
+            <div class="mx-2">
+                <button v-if="info.user.id != user.id" data-mdb-toggle="modal" data-mdb-target="#reportUserToAdmin"
+                    class="btn btn-link btn-rounded"><i class="fa-solid fa-triangle-exclamation"></i>
+                    Report</button>
+            </div>
+        </ActionBar>
         <div class="row">
-            <div class="col-md-12 position-relative  coverPhoto"
-                :style="{ 'background-image': `url(${backgroundImg})` }">
+            <div class="col-md-12 position-relative  coverPhoto" :style="{ 'background-image': `url(${backgroundImg})` }">
                 <div class="position-absolute  mainProfileConatiner d-flex align-items-center">
                     <img v-if="info.user.profile_photo_path" class="mainProfile rounded rounded-circle"
                         :src="imagePath + info.user.profile_photo_path" alt="">
@@ -13,17 +18,20 @@
                             :to="{ name: 'profileSetting' }" class="ms-2 fs-4"><i
                                 class="fa-regular fa-pen-to-square"></i></router-link><br>
                         <div class="m-0 p-0 mt-2" v-if="info.user.id != user.id">
+                            <!-- Follow User -->
+                            <span v-if="info.user.id != user.id">
+                                <button v-if="info.follow_status == 2" @click="followToUser()" class="btn btn-outline-secondary btn-rounded ms-2 mt-2">
+                                    <i class="fa-solid fa-plus"></i> Follow</button>
+                                <button v-if="info.follow_status == 1" @click="followToUser()" class="btn btn-primary btn-rounded ms-2 mt-2">
+                                    Following</button>
+                            </span>
                             <a :href="server + '/chatify/' + info.user.id" target="_black"
                                 class="btn btn-primary btn-rounded ms-2"><i class="fa-solid fa-message"></i>
                                 Message</a>
                             <a :href="'tel:' + info.user.phone" v-if="info.user.phone"
                                 class="btn btn-success btn-rounded ms-2 mt-2"><i class="fa-solid fa-phone-volume"></i>
                                 Call</a>
-                            <button v-if="info.user.id != user.id" data-mdb-toggle="modal"
-                                data-mdb-target="#reportUserToAdmin"
-                                class="btn btn-outline-warning btn-rounded ms-2 mt-2"><i
-                                    class="fa-solid fa-triangle-exclamation"></i>
-                                Report</button>
+
                         </div>
                     </div>
                 </div>
@@ -42,7 +50,8 @@
                             </tr>
                             <tr>
                                 <td><i class="fa-solid fa-star me-1"></i></td>
-                                <td><span @click="goToReviewPage()" class="ms-2 text-primary cursor-pointer"> {{ info.review.rating }}  . ({{ info.review.count }} Reviews)</span></td>
+                                <td><span @click="goToReviewPage()" class="ms-2 text-primary cursor-pointer"> {{
+                                    info.review.rating }} . ({{ info.review.count }} Reviews)</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -88,8 +97,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-dark reportUserModalCloseBtn"
-                                    data-mdb-dismiss="modal">
+                                <button type="button" class="btn btn-dark reportUserModalCloseBtn" data-mdb-dismiss="modal">
                                     Close
                                 </button>
                                 <button type="button" class="btn btn-primary" @click="reportUser()">Submit</button>
@@ -120,10 +128,11 @@ export default {
                 user: {},
                 total_post: 0,
                 categories: [],
-                review:{
-                    count:0,
-                    rating:0.0,
+                review: {
+                    count: 0,
+                    rating: 0.0,
                 },
+                follow_status: 0,
             },
             posts: [],
             reportUserForm: {
@@ -194,9 +203,15 @@ export default {
                 }
             })
         },
-        goToReviewPage(){
-            this.$router.push({name:'profileReview',params:{id:this.$route.params.id}});
-        }
+        goToReviewPage() {
+            this.$router.push({ name: 'profileReview', params: { id: this.$route.params.id } });
+        },
+        followToUser() {
+            axios.get(this.api + `/profile/follow/${this.$route.params.id}`, this.authHeader).then(r => {
+                this.info.follow_status = r.data.success;
+            })
+
+        },
     },
     computed: {
         ...mapState(['user', 'pageLoading', 'server']),

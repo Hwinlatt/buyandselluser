@@ -89,6 +89,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'notFound',
     component: () => import('../views/pages/404View.vue'),
   },
+  { 
+    path: '/:pathMatch(.*)*',
+    redirect:'/'
+  },
 ]
 
 const router = createRouter({

@@ -4,7 +4,7 @@
             <div class="col-md-4"></div>
             <div class="col-md-4 card my-4" v-if="!user.email_verified_at">
                 <div class="card-header text-center">
-                    <img src="../../../public/img/onekyat.png" class="rounded rounded-circle" height="60"
+                    <img src="/img/b-logo.ico" class="rounded rounded-circle" height="60"
                         alt="B&S Logo" /> Email verification
                 </div>
                 <div class="card-body">

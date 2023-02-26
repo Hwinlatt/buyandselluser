@@ -70,13 +70,13 @@ export default createStore({
         localStorage.setItem('verified_at', r.data.email_verified_at);
         this.state.pageLoading = false;
       }).catch(err => {
-        console.log(err);
-        if (err.response.statusText == 'Unauthorized') {
+        if (err.response.statusText == 'Unauthorized' || err.response.status == '403') {
           localStorage.removeItem('token');
           state.user = {
             email_verified_at: null,
           };
           state.token = '';
+          window.location.reload()
         }
         this.state.pageLoading = false;
       })

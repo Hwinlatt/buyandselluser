@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row d-flex  justify-content-center myPostContainer m-0 p-0">
-      <div class="card product_card position-relative rounded   m-1  p-0" v-for="(post, index) in posts" :key="index">
+      <div class="card product_card position-relative rounded cursor-pointer   m-1  p-0" v-for="(post, index) in posts" :key="index">
         <img class="image-fluid rounded" :src="imagePath + post.images[0]" alt="post image" srcset="">
         <div @click="goToInfoPage(post.id)" class="card-body bg-gray-glass overflow-hidden">
           <div class="">

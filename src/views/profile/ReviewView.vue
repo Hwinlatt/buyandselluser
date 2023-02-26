@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-3"></div>
             <div class="col-md-6">
-                <div class="py-2">
+                <div class="py-2" v-if="user.id != $route.params.id">
                     <div class="card" v-if="ui.review_question">
                         <div class="card-body">
                             <p class="text-center">
@@ -79,7 +79,7 @@
             Launch demo modal
         </button>
         <!-- Modal -->
-        <div class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        <div v-if="user.id != $route.params.id" class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

@@ -78,7 +78,7 @@
             </div>
         </div>
         <div class="row mt-4" v-else>
-            <h4 class="text-center text-muted">{{ posts_status }}</h4>
+            <h4 class="text-center text-muted" v-html="posts_status"></h4>
         </div>
         <div v-if="isLogin" id="sellBtn" class=" position-fixed">
             <router-link to="/addPost" class="btn btn-primary"><i class="fa-solid fa-camera"></i>
@@ -190,10 +190,10 @@ export default {
                     }
                     this.$store.dispatch('pageLoadingState', false);
                 }).catch(err => {
-                    useFunction.error(err, this.$swal);
-                    if (!status != 'moreData') {
-                        this.$store.dispatch('pageLoadingState', false);
+                    if (err.response.statusText == 'Forbidden') {
+                        this.posts_status = '<i class="fa-solid fa-triangle-exclamation"></i> Please Activate First'
                     }
+                    this.$store.dispatch('pageLoadingState', false);
                 })
         },
         morePostInfo(postId) {

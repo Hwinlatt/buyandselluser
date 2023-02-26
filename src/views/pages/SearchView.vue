@@ -78,6 +78,22 @@
             <div>
                 <h3 class="text-center mt-5 text-muted">{{ filterResultMessage }}</h3>
             </div>
+            <div class="my-6" v-if="users.length > 0">
+                <h3 class="text-center">Users</h3>
+                <div class=" line-mf mb-3"></div>
+                <div class="row align-items-center justify-content-start">
+                    <div class="col-md-3 p-1 rounded" @click=" goToProfile(user.id)" v-for="(user,index) in users" :key="index">
+                        <div class=" d-flex bg-dark cursor-pointer bg-gradient">
+                            <img class="img-70 rounded" v-if="user.profile_photo_path" :src="imagePath+profile_photo_path" alt="" srcset="">
+                            <img class="img-70 rounded" v-else :src="user.profile_photo_url" alt="" srcset="">
+                            <div class="ms-2">
+                                <span>{{ user.name }}</span> <br>
+                                <small class="text-muted"><i class="fa-solid fa-star"></i>{{ user.rating }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </keep-alive>
 </template>
@@ -105,6 +121,7 @@ export default {
             filterResultMessage: '',
             mainResult: [],
             recentSearch: [],
+            users:[],
         }
     },
     methods: {
@@ -114,15 +131,15 @@ export default {
             if (this.searchKey.length > 0) {
                 this.storeRecentSearch();
                 axios.get(this.api + '/posts/search/' + this.searchKey + '?limit=' + this.post_limit, this.authHeader).then(r => {
-                    this.mainResult = r.data;
-                    if (r.data.length == 0) {
+                    this.mainResult = r.data.posts;
+                    this.users = r.data.users;
+                    if (r.data.posts.length == 0) {
                         this.resultMessage = 'There is nothing to show';
                     } else {
                         this.resultMessage = ''
                     }
                     this.isAfterSearch = true;
                 }).catch(err => {
-                    console.log(err);
                     this.isAfterSearch = true;
                     this.resultMessage = ''
                 })
@@ -172,6 +189,9 @@ export default {
         countPostWithCity(city  ) {
             let result = this.mainResult.filter(e => { return e.city == city });
             return result.length;
+        },
+        goToProfile(uId){
+            this.$router.push({name:'profile',params:{id:uId}})
         }
     },
     computed: {
@@ -194,6 +214,10 @@ export default {
             if (this.filterBy.region != '') {
                 let result = this.defaultVar.city.filter(e => { return e.region == this.filterBy.region })
                 return result;
+            }
+            if (this.filterBy.region == '') {
+                // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+                this.filterBy.city = '';
             }
             return [];
         },

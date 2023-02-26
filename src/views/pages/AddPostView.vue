@@ -144,7 +144,7 @@ export default {
             },
             formData: {
                 name: '',
-                category_id: '1',
+                category_id: '',
                 price: '',
                 images: [],
                 additional:'',
@@ -197,6 +197,7 @@ export default {
         },
         removeImage(index) {
             this.formData.images.splice(index, 1);
+            $('.imageAddFiles').val('');
             this.getPreviewUploadImage();
         },
         getPreviewUploadImage() {
